@@ -3,17 +3,21 @@ import java.time.LocalDate;
 public class Borrower {
 
     private final String lastName;
-    private double loanAmount;
-    private PaymentList payments;
+    private final PaymentList payments;
 
-    public Borrower(String lastName, double loanAmount) {
+    public Borrower(String lastName) {
         this.lastName = lastName;
-        this.loanAmount = loanAmount;
         this.payments = new PaymentList();
     }
 
-    public String getLastName() { return lastName; }
-    public double getLoanAmount() { return loanAmount; }
+    public double getLoanAmount() {
+        return payments.totalSum();
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
     public void addPayment(Payment p) {
         payments.add(p);
     }

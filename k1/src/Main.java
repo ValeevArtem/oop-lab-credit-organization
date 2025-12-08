@@ -7,21 +7,28 @@ import java.time.LocalDate;
  */
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Тема 10: Разработка объектной программы для обработки данных кредитной организации.");
-        System.out.println("Заготовка проекта создана. Готов к разработке.");
+
+        System.out.println("\nТема 10: Разработка объектной программы для обработки данных кредитной организации.");
+        System.out.println("Заготовка проекта создана. Готов к разработке.\n");
 
         CreditOrganization org = new CreditOrganization(10);
 
-        // === 1. Добавление заемщиков ===
-        Borrower b1 = new Borrower("Иванов", 100000);
+        // =====================================================================
+        // === ТЕСТ 1: Добавление заемщиков и расчёт общей суммы кредитов ===
+        // =====================================================================
+        System.out.println("=== ТЕСТ 1: Добавление заемщиков ===");
+
+        Borrower b1 = new Borrower("Иванов");
         b1.addPayment(new Payment(LocalDate.of(2025, 1, 10), 10000));
         b1.addPayment(new Payment(LocalDate.of(2025, 2, 10), 15000));
 
-        Borrower b2 = new Borrower("Петров", 200000);
+        Borrower b2 = new Borrower("Петров");
         b2.addPayment(new Payment(LocalDate.of(2025, 1, 15), 20000));
+        b2.addPayment(new Payment(LocalDate.of(2025, 2, 15), 50000));
+        b2.addPayment(new Payment(LocalDate.of(2025, 4, 15), 70000));
 
-        Borrower b3 = new Borrower("Сидоров", 300000);
-        b2.addPayment(new Payment(LocalDate.of(2025, 1, 15), 20000));
+        Borrower b3 = new Borrower("Сидоров");
+        b3.addPayment(new Payment(LocalDate.of(2025, 1, 15), 20000));
 
         System.out.println("Общая сумма кредитов до добавления: " + org.totalCredits());
 
@@ -30,13 +37,36 @@ public class Main {
         org.addBorrower(b3);
 
         System.out.println("Общая сумма кредитов после добавления: " + org.totalCredits());
-        // Ожидаем: 300_000
+        System.out.println();
 
-        // === 2. Тест сохранения/загрузки (полный дамп) ===
+        // =====================================================================
+        // === ТЕСТ 2: Сохранение/загрузка и удаление платежа ===
+        // =====================================================================
+        System.out.println("=== ТЕСТ 2: Сохранение/загрузка и удаление платежа ===");
+
         saveAndLoadCreditOrg(org, "credits1.txt");
 
-        // === 3. Удаление заемщика ===
-        System.out.println("\n--- Удаляем Петрова ---");
+        System.out.println("Общая сумма кредитов Петрова: " + org.findBorrower("Петров").getPayments().totalSum());
+        System.out.println("--- Удаляем платеж Петрова от 2025-01-15 ---");
+
+        Borrower petrov = org.findBorrower("Петров");
+        if (petrov != null) {
+            System.out.println("Платёж за 15-01-2025 найден -> " + petrov.getPayments().find(LocalDate.of(2025, 1, 15)));
+            petrov.removePayment(LocalDate.of(2025, 1, 15));
+            System.out.println("Общая сумма кредитов Петрова после удаления: " + petrov.getPayments().totalSum());
+        }
+
+        saveAndLoadCreditOrg(org, "credits2.txt");
+        System.out.println();
+
+        // =====================================================================
+        // === ТЕСТ 3: Удаление заемщика ===
+        // =====================================================================
+        System.out.println("=== ТЕСТ 3: Удаление заемщика ===");
+
+        System.out.println("Общая сумма кредитов Петрова: " + org.findBorrower("Петров").getPayments().totalSum());
+        System.out.println("--- Удаляем Петрова из списка заемщиков ---");
+
         org.removeBorrower("Петров");
         Borrower petrovAfterDelete = org.findBorrower("Петров");
         if (petrovAfterDelete == null) {
@@ -46,9 +76,13 @@ public class Main {
         }
 
         System.out.println("Общая сумма кредитов после удаления Петрова: " + org.totalCredits());
-        // Ожидаем: 100_000
+        System.out.println();
 
-        // === 4. Поиск и вывод данных Иванова ===
+        // =====================================================================
+        // === ТЕСТ 4: Поиск и вывод данных заемщика ===
+        // =====================================================================
+        System.out.println("=== ТЕСТ 4: Поиск и вывод данных Иванова ===");
+
         Borrower ivanov = org.findBorrower("Иванов");
         if (ivanov != null) {
             System.out.println("✅ Найден: " + ivanov.getLastName() + ", долг: " + ivanov.getLoanAmount());
@@ -57,9 +91,14 @@ public class Main {
         } else {
             System.out.println("❌ Иванов не найден!");
         }
+        System.out.println();
 
-        // === 5. Финальное сохранение (после удаления) ===
-        saveAndLoadCreditOrg(org, "credits2.txt");
+        // =====================================================================
+        // === ТЕСТ 5: Финальное сохранение состояния после изменений ===
+        // =====================================================================
+        System.out.println("=== ТЕСТ 5: Финальное сохранение состояния ===");
+
+        saveAndLoadCreditOrg(org, "credits3.txt");
     }
 
     /**
@@ -68,7 +107,7 @@ public class Main {
     public static void saveAndLoadCreditOrg(CreditOrganization org, String filename) {
         try {
             org.save(filename);
-            System.out.println("\n💾 Сохранено в " + filename);
+            System.out.println("💾 Сохранено в " + filename);
 
             CreditOrganization loaded = new CreditOrganization(10);
             loaded.load(filename);
