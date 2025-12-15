@@ -18,6 +18,14 @@ public class CreditOrganization {
     }
 
     /**
+     * Возвращает заемщиков в организации.
+     * @return заемщиков
+     */
+    public BorrowerQueue getBorrowers() {
+        return borrowers;
+    }
+
+    /**
      * Добавляет нового заемщика в организацию.
      * Заемщик помещается в конец внутренней очереди.
      * @param b объект заемщика для добавления
